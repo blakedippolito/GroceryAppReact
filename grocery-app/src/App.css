@@ -2,6 +2,7 @@
   text-align: center;
 }
 
+
 table {
   margin: 0 auto; /* Center the table horizontally */
   border-collapse: collapse; /* Remove space between table borders */
@@ -13,5 +14,5 @@ table th, table td {
 }
 
 table tr:nth-child(even) {
-  background-color: gray; /* Gray background for even rows */
+  background-color: lightgray; /* Gray background for even rows */
 }

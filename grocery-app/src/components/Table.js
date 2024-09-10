@@ -1,20 +1,18 @@
-import React from 'react';
+import Item from "./Item";
 
-const Table = ({ items }) => {
+const Table = ({ items, onDelete, onClick }) => {
   return (
     <table>
       <thead>
-        <tr>
+        {/* <tr>
           <th>Item</th>
           <th>Amount</th>
-        </tr>
+          <th>Delete</th>
+        </tr> */}
       </thead>
       <tbody>
         {items.map((item) => (
-          <tr key={item.id}>
-            <td>{item.title}</td>
-            <td>{item.amount}</td>
-          </tr>
+          <Item key={item.id} item={item} onDelete={onDelete} onClick={onClick} />
         ))}
       </tbody>
     </table>

@@ -1,11 +1,41 @@
-import React from 'react'
+import { useState } from "react";
 
-const AddItem = () => {
+const AddItem = ({ onAdd }) => {
+  const [item, setItem] = useState("");
+  const [amount, setAmount] = useState("");
+  const saved=false
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (!item) {
+      alert("Please enter a valid item");
+      return;
+    }
+    onAdd({title: item, amount, saved });
+    setItem("");
+    setAmount("");
+  };
   return (
-    <form>
-        <input type="text" placeholder='Item'></input> <input type="number" placeholder='Amount'></input> <input type="submit" value="Submit"></input>
+    <form onSubmit={onSubmit}>
+      <input
+        type="text"
+        placeholder="Item"
+        value={item}
+        onChange={(e) => {
+          setItem(e.target.value);
+        }}
+      ></input>
+      <input
+        type="number"
+        placeholder="Amount"
+        value={amount}
+        onChange={(e) => {
+          setAmount(e.target.value);
+        }}
+      ></input>
+      <input type="submit" value="Submit"></input>
     </form>
-  )
-}
+  );
+};
 
-export default AddItem
+export default AddItem;
