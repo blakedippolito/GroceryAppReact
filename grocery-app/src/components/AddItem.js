@@ -7,7 +7,7 @@ const AddItem = ({ onAdd }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!item) {
+    if (!item || !amount) {
       alert("Please enter a valid item");
       return;
     }
@@ -16,7 +16,7 @@ const AddItem = ({ onAdd }) => {
     setAmount("");
   };
   return (
-    <form onSubmit={onSubmit}>
+    <form className="addForm" onSubmit={onSubmit}>
       <input
         type="text"
         placeholder="Item"
@@ -32,6 +32,7 @@ const AddItem = ({ onAdd }) => {
         onChange={(e) => {
           setAmount(e.target.value);
         }}
+        style={{ width: '100px'}}
       ></input>
       <input type="submit" value="Submit"></input>
     </form>

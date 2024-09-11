@@ -1,7 +1,10 @@
-const Button = ({onClick}) => {
+import Button from 'react-bootstrap/Button';
+
+
+const AddButton = ({onClick, title, className}) => {
   return (
-    <button onClick={onClick}>Add Item</button>
+    <Button onClick={onClick} className={className}>{title}</Button>
   )
 }
 
-export default Button
+export default AddButton

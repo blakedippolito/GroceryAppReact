@@ -1,10 +1,11 @@
-import Button from "./Button"
+import AddButton from "./Button"
+import './Header.css'
 
 const Header = ({ title, onAdd, showAdd }) => {
     return (
         <>
             <header>{title}</header>
-            <Button onClick={onAdd}></Button>
+            <AddButton onClick={onAdd} title={'Add Item'}></AddButton>
         </>
 
 

@@ -3,6 +3,9 @@ import { useState } from "react";
 import Header from "./components/Header";
 import Table from "./components/Table";
 import AddItem from "./components/AddItem";
+import Favorites from "./components/Favorites";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   const items = [
@@ -57,6 +60,7 @@ function App() {
       />
       {showAddItem && <AddItem onAdd={addItem}/>}
       <Table items={list} onDelete={deleteItem} onClick={saveItem}/>
+      <Favorites favorites={list} />
     </div>
   );
 }

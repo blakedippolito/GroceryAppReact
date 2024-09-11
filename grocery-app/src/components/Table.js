@@ -1,4 +1,5 @@
 import Item from "./Item";
+import "./Table.css"
 
 const Table = ({ items, onDelete, onClick }) => {
   return (
