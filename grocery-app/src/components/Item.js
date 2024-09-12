@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 const Item = ({ item, onDelete, onClick }) => {
   const [isStriked, setIsStriked] = useState(false);
   const [icon, setIcon] = useState("");
+  const [isFavorited, setIsFavorited] = useState(item.saved)
 
   // UseEffect to fetch the icon when the item changes
   useEffect(() => {
@@ -14,7 +15,6 @@ const Item = ({ item, onDelete, onClick }) => {
           `http://localhost:6969/api/icons/search?icon=${itemTitle}`
         );
         const data = await res.json();
-        console.log(data);
         setIcon(data.link); // Assuming `data.icon` contains the icon info
       } catch (error) {
         console.error("Error fetching icon: ", error);
@@ -31,6 +31,58 @@ const Item = ({ item, onDelete, onClick }) => {
     setIsStriked(!isStriked);
   };
 
+  const addFavorite = async () => {
+    console.log('Added')
+    try {
+      const response = await fetch(
+        "http://localhost:6969/api/list/addFavorite",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({item: item.item, amount: item.amount}),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add item");
+      }
+
+      const data = await response.json();
+      setIsFavorited(true);
+      console.log("Item added to server:", data);
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  };
+
+  const removeFavorite = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:6969/api/list/removeFavorite",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Pass the item or its unique identifier to the backend
+          body: JSON.stringify({ itemID: item._id, itemName: item.item }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to remove item");
+      }
+
+      const data = await response.json();
+      setIsFavorited(false); // Update UI state
+      console.log("Item removed from favorites:", data);
+    } catch (error) {
+      console.error("Error removing item from favorites:", error);
+    }
+  };
+
   return (
     <tr
       onDoubleClick={handleDoubleClick}
@@ -40,16 +92,18 @@ const Item = ({ item, onDelete, onClick }) => {
         {item.saved ? (
           <FaHeart
             style={{ color: "green", cursor: "pointer" }}
-            onClick={() => onClick(item._id)}
+            onClick={removeFavorite}
           />
         ) : (
           <FaHeartCirclePlus
             style={{ color: "red", cursor: "pointer" }}
-            onClick={() => onClick(item._id)}
+            onClick={addFavorite}
           />
         )}
       </td>
-      <td>{item.item} {icon && <img src={icon} />}</td>
+      <td>
+        {item.item} {icon && <img src={icon} />}
+      </td>
       <td>{item.amount}</td>
       <td>
         <FaTimes

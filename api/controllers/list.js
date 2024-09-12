@@ -1,4 +1,5 @@
 const Item = require("../models/Item")
+const Favorite = require("../models/Favorite")
 
 module.exports = {
     getItems: async (req, res) => {
@@ -13,9 +14,9 @@ module.exports = {
     },
     addItem : async (req,res) => {
         try {
-            await Item.create({item: req.body.itemName, amount: req.body.itemAmount, completed: false})
-            console.log(`${req.body.itemName} has been added!`)
-            res.status(201).json({ message: `${req.body.itemName} added successfully` });
+            await Item.create({item: req.body.item, amount: req.body.amount, completed: false})
+            console.log(`${req.body.item} has been added!`)
+            res.status(201).json({ message: `${req.body.item} added successfully` });
         } catch (err) {
             console.error(err)
             res.status(500).json({ error: "Failed to add item" });
@@ -30,6 +31,47 @@ module.exports = {
             console.error(err)
         }
     },
+    getFavorites: async (req, res) => {
+        try {
+            const favorites = await Favorite.find()
+            res.json({ favorites })
+
+        } catch (err) {
+            console.error(err)
+        }
+    },
+    addFavorite : async (req,res) => {
+        try {
+            await Favorite.create({item: req.body.item, amount: req.body.amount})
+            console.log(`${req.body.item} has been added!`)
+            res.status(201).json({ message: `${req.body.item} added successfully` });
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ error: "Failed to add item" });
+        }
+    },
+    removeFavorite : async (req,res) => {
+        const { itemID, itemName } = req.body;
+
+        try {
+          // Try to find and remove by itemID
+          let favorite = await Favorite.findByIdAndDelete(itemID);
+          
+          // If not found by ID, try by itemName
+          if (!favorite) {
+            favorite = await Favorite.findOneAndDelete({ item: itemName });
+          }
+      
+          if (favorite) {
+            res.json({ message: 'Item removed from favorites' });
+          } else {
+            res.status(404).json({ error: 'Item not found' });
+          }
+        } catch (error) {
+          res.status(500).json({ error: 'Error removing item' });
+        }
+    },
+      
     markComplete: async (req,res)=> {
         try {
             await Item.findOneAndUpdate({_id: req.body.itemID}, {

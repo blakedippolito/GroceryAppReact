@@ -7,7 +7,13 @@ const listController = require('../controllers/list')
 
 router.get('/', listController.getItems)
 
+router.get('/favorites', listController.getFavorites)
+
 router.post('/addItem', listController.addItem)
+
+router.post('/addFavorite', listController.addFavorite)
+
+router.delete('/removeFavorite', listController.removeFavorite)
 
 router.delete('/deleteItem', listController.deleteItem)
 
