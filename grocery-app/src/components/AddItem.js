@@ -17,6 +17,7 @@ const AddItem = ({ onAdd }) => {
 
       const data = await response.json();
       console.log(data);
+      onAdd(data)
     } catch (error) {
       console.error("Error adding item:", error);
     }
@@ -28,7 +29,7 @@ const AddItem = ({ onAdd }) => {
       alert("Please enter a valid item");
       return;
     }
-    onAdd({title: item, amount, saved });
+    // onAdd({item: item, amount, saved });
     addItem();
     setItem("");
     setAmount("");

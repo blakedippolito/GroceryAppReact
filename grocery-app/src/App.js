@@ -47,15 +47,26 @@ function App() {
   
 
   const addItem = (item) => {
-    const newItem = {
-      ...item,
-      // id: items.length+1
-    }
-    setItems([...items, newItem])
-  }
+    setItems([...items, item]);
+  };
 
-  const deleteItem = (id) => {
+  const deleteItem = async (id) => {
     setItems(items.filter(item=>item._id!==id))
+    try {
+      const response = await fetch("http://localhost:6969/api/list/deleteItem", {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ itemID: id }),
+      });
+
+      const data = await response.json();
+      console.log(data)
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  
   }
 
   const saveItem = (id) => {    
