@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const listController = require('../controllers/list')
-const { ensureAuth } = require('../middleware/auth')
+// const { ensureAuth } = require('../middleware/auth')
 
-router.get('/', ensureAuth, listController.getItems)
+// router.get('/', ensureAuth, listController.getItems)
+
+router.get('/', listController.getItems)
 
 router.post('/addItem', listController.addItem)
 

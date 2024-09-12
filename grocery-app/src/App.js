@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Table from "./components/Table";
 import AddItem from "./components/AddItem";
@@ -8,43 +8,60 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const items = [
-    {
-      id: 1,
-      title: "Apples",
-      amount: 10,
-      saved: true
-    },
-    {
-      id: 2,
-      title: "Bananas",
-      amount: 6,
-      saved: false
-    },
-  ];
-
+  // const items = [
+  //   {
+  //     id: 1,
+  //     title: "Apples",
+  //     amount: 10,
+  //     saved: true
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Bananas",
+  //     amount: 6,
+  //     saved: false
+  //   },
+  // ];
+  const [items, setItems] = useState([]);
+  const [itemsLeft, setItemsLeft] = useState(0);
+  const [loading, setLoading] = useState(true); // Optional: to show a loading state
   const [showAddItem, setShowAddItem] = useState(false);
-  const [list, setList] = useState(items)
+
+  useEffect(() => {
+      const fetchItems = async () => {
+          try {
+              const response = await fetch('http://localhost:6969/api/list/'); // Adjust URL as needed
+              const data = await response.json();
+              setItems(data.items);
+              setItemsLeft(data.left);
+              setLoading(false); // Data has been fetched
+          } catch (error) {
+              console.error('Error fetching items:', error);
+              setLoading(false);
+          }
+      };
+
+      fetchItems();
+  }, []); // Empty dependency array means this effect runs once when the component mounts
+
+  
 
   const addItem = (item) => {
     const newItem = {
       ...item,
-      id: list.length+1
+      // id: items.length+1
     }
-    setList([...list, newItem])
+    setItems([...items, newItem])
   }
 
   const deleteItem = (id) => {
-    console.log(`delete ${id}`)
-    setList(list.filter(item=>item.id!==id))
+    setItems(items.filter(item=>item._id!==id))
   }
 
-  const saveItem = (id) => {
-    console.log(`Saved ${id}`);
-    
-    setList(
-      list.map(item => 
-        item.id === id 
+  const saveItem = (id) => {    
+    setItems(
+      items.map(item => 
+        item._id === id 
           ? { ...item, saved: !item.saved }  // Toggle 'saved' for the matching item
           : item  // Leave other items unchanged
       )
@@ -59,8 +76,8 @@ function App() {
         showAdd={showAddItem}
       />
       {showAddItem && <AddItem onAdd={addItem}/>}
-      <Table items={list} onDelete={deleteItem} onClick={saveItem}/>
-      <Favorites favorites={list} />
+      <Table items={items} onDelete={deleteItem} onClick={saveItem}/>
+      <Favorites favorites={items} onDelete={deleteItem} onClick={saveItem}/>
     </div>
   );
 }

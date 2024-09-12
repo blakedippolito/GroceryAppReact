@@ -12,3 +12,11 @@ table {
     background-color: lightgray; /* Gray background for even rows */
   }
 
+
+  tr img {
+    height: 20px;
+  }
+
+  td {
+    user-select: none;
+  }

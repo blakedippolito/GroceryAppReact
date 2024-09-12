@@ -5,7 +5,7 @@ module.exports = {
         try {
             const items = await Item.find()
             const itemsLeft = await Item.countDocuments({completed: false})
-            res.render('list.ejs', {items: items, left: itemsLeft})
+            res.json({ items, left: itemsLeft })
 
         } catch (err) {
             console.error(err)
@@ -15,9 +15,10 @@ module.exports = {
         try {
             await Item.create({item: req.body.itemName, amount: req.body.itemAmount, completed: false})
             console.log(`${req.body.itemName} has been added!`)
-            res.redirect('/list')
+            res.status(201).json({ message: `${req.body.itemName} added successfully` });
         } catch (err) {
             console.error(err)
+            res.status(500).json({ error: "Failed to add item" });
         }
     },
     deleteItem: async (req,res) => {

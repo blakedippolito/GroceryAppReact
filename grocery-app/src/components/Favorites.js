@@ -1,47 +1,15 @@
-// import AddButton from "./Button";
-// // import Modal from 'react-bootstrap/Modal';
-// import { useState } from "react";
-// import "./Favorites.css";
-
-// const Favorites = ({ favorites, onClick }) => {
-//   const savedItems = favorites.filter((item) => item.saved === true);
-//   const [showFavorites, setShowFavorites] = useState(false);
-
-//   const toggleFavorites = () => {
-//     setShowFavorites(!showFavorites);
-//   };
-
-//   const titleText = () => {
-//     return showFavorites ? "Hide Favorites" : "Show Favorites";
-//   };
-
-//   return (
-//     <>
-//       <AddButton onClick={toggleFavorites} title={titleText()} />
-
-//       {showFavorites && (
-//         <ul>
-//           {savedItems.map((item) => (
-//             <li key={item.id}>{item.title}</li>
-//           ))}
-//         </ul>
-//       )}
-
-//     </>
-//   );
-// };
-
-// export default Favorites;
-
 import AddButton from "./Button";
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 import { useState } from "react";
 import "./Favorites.css";
+import { FaTimes } from "react-icons/fa";
 
-const Favorites = ({ favorites, onClick }) => {
-  const savedItems = favorites.filter((item) => item.saved === true);
+const Favorites = ({ favorites, onClick, onDelete }) => {
   const [showFavorites, setShowFavorites] = useState(false);
+
+  // Filter saved items
+  const savedItems = favorites.filter((item) => item.saved === true);
 
   const toggleFavorites = () => {
     setShowFavorites(!showFavorites);
@@ -49,7 +17,11 @@ const Favorites = ({ favorites, onClick }) => {
 
   return (
     <>
-      <AddButton onClick={toggleFavorites} title={showFavorites ? "Hide Favorites" : "Show Favorites"} className={'favoriteButton'}/>
+      <AddButton
+        onClick={toggleFavorites}
+        title={showFavorites ? "Hide Favorites" : "Show Favorites"}
+        className={"favoriteButton"}
+      />
 
       <Modal show={showFavorites} onHide={toggleFavorites}>
         <Modal.Header closeButton>
@@ -59,7 +31,13 @@ const Favorites = ({ favorites, onClick }) => {
           {savedItems.length > 0 ? (
             <ul>
               {savedItems.map((item) => (
-                <li key={item.id}>{item.title}</li>
+                <li key={item._id}>
+                  {item.item}
+                  <FaTimes
+                    style={{ color: "red", cursor: "pointer" }}
+                    onClick={() => onClick(item._id)} // Update saved state on click
+                  />
+                </li>
               ))}
             </ul>
           ) : (
