@@ -1,13 +1,27 @@
+import { useState, useEffect } from "react";
 import { FaTimes, FaHeart } from "react-icons/fa";
 import { FaHeartCirclePlus } from "react-icons/fa6";
-import { useState, useEffect } from "react";
 
-const Item = ({ item, onDelete, onClick }) => {
-  const [isStriked, setIsStriked] = useState(false);
+const Item = ({
+  item,
+  favorites,
+  onDelete,
+  onAddFavorite,
+  onRemoveFavorite,
+  onUpdateItem,
+}) => {
   const [icon, setIcon] = useState("");
-  const [isFavorited, setIsFavorited] = useState(item.saved)
+  const [isFavorited, setIsFavorited] = useState(
+    favorites.some((fav) => fav.item === item.item)
+  );
+  const [isCompleted, setIsCompleted] = useState(item.completed);
 
-  // UseEffect to fetch the icon when the item changes
+  // UseEffect to update isFavorited when favorites list changes
+  useEffect(() => {
+    setIsFavorited(favorites.some((fav) => fav.item === item.item));
+  }, [favorites, item.item]);
+
+  // Fetch the icon for the item
   useEffect(() => {
     const fetchIcon = async (itemTitle) => {
       try {
@@ -15,100 +29,62 @@ const Item = ({ item, onDelete, onClick }) => {
           `http://localhost:6969/api/icons/search?icon=${itemTitle}`
         );
         const data = await res.json();
-        setIcon(data.link); // Assuming `data.icon` contains the icon info
+        setIcon(data.link);
       } catch (error) {
         console.error("Error fetching icon: ", error);
       }
     };
 
-    // Call the fetch function if item exists
     if (item && item.item) {
-      fetchIcon(item.item); // Assuming you're passing `item.title` to the API
+      fetchIcon(item.item);
     }
   }, [item]);
 
   const handleDoubleClick = () => {
-    setIsStriked(!isStriked);
+    onUpdateItem(item._id); // This will trigger the `toggleComplete` in the parent
+    setIsCompleted(!item.completed)
+  };
+  const handleAddFavorite = async () => {
+    await onAddFavorite(item);
+    setIsFavorited(true);
   };
 
-  const addFavorite = async () => {
-    console.log('Added')
-    try {
-      const response = await fetch(
-        "http://localhost:6969/api/list/addFavorite",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({item: item.item, amount: item.amount}),
-        }
-      );
+  const handleRemoveFavorite = async () => {
+    const favoriteToRemove = favorites.find((fav) => fav.item === item.item);
 
-      if (!response.ok) {
-        throw new Error("Failed to add item");
-      }
-
-      const data = await response.json();
-      setIsFavorited(true);
-      console.log("Item added to server:", data);
-    } catch (error) {
-      console.error("Error adding item:", error);
-    }
-  };
-
-  const removeFavorite = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:6969/api/list/removeFavorite",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // Pass the item or its unique identifier to the backend
-          body: JSON.stringify({ itemID: item._id, itemName: item.item }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to remove item");
-      }
-
-      const data = await response.json();
-      setIsFavorited(false); // Update UI state
-      console.log("Item removed from favorites:", data);
-    } catch (error) {
-      console.error("Error removing item from favorites:", error);
+    if (favoriteToRemove) {
+      await onRemoveFavorite(favoriteToRemove._id);
+      setIsFavorited(false);
     }
   };
 
   return (
     <tr
+      key={item._id}
       onDoubleClick={handleDoubleClick}
-      style={{ backgroundColor: isStriked ? "#FFCCCB" : "white" }}
+      style={{ backgroundColor: isCompleted ? "#FFCCCB" : "white" }}
     >
       <td>
-        {item.saved ? (
+        {isFavorited ? (
           <FaHeart
             style={{ color: "green", cursor: "pointer" }}
-            onClick={removeFavorite}
+            onClick={handleRemoveFavorite}
           />
         ) : (
           <FaHeartCirclePlus
             style={{ color: "red", cursor: "pointer" }}
-            onClick={addFavorite}
+            onClick={handleAddFavorite}
           />
         )}
       </td>
       <td>
-        {item.item} {icon && <img src={icon} />}
+        {item.item} {icon && <img src={icon} alt="icon" />}
       </td>
       <td>{item.amount}</td>
       <td>
         <FaTimes
           style={{ color: "red", cursor: "pointer" }}
-          onClick={() => onDelete(item._id)} // Ensure correct delete function
+          onClick={() => onDelete(item._id)}
         />
       </td>
     </tr>

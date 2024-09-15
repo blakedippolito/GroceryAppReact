@@ -8,3 +8,14 @@ ul {
     color: green;
 }
 
+.favoriteBtn {
+    text-align: center;
+    font-size: 12px;
+}
+
+.favoriteBody {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}

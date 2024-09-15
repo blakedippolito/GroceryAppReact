@@ -2,49 +2,38 @@ import { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { FaTimes, FaPlus } from "react-icons/fa";
-import "./Favorites.css"
+import "./Favorites.css";
 
-const Favorites = () => {
-  const [favorites, setFavorites] = useState([]);
+const Favorites = ({ allItems, favorites, onRemoveFavorite, onAddFavorite, onAddItem }) => {
   const [showFavorites, setShowFavorites] = useState(false);
+  const [comparison, setComparison] = useState([]);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const response = await fetch('http://localhost:6969/api/list/favorites/');
-        const data = await response.json();
-        setFavorites(data.favorites);
-      } catch (error) {
-        console.error('Error fetching favorites:', error);
-      }
-    };
+  // Toggle Favorite Modal
+  const toggleFavorites = () => setShowFavorites(!showFavorites);
 
-    fetchFavorites();
-  }, []);
-
+  // Remove Favorite from Modal
   const removeFavorite = async (id) => {
     try {
-      const response = await fetch("http://localhost:6969/api/list/removeFavorite", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ itemID: id }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove item from favorites");
-      }
-
-      const data = await response.json();
-      setFavorites(favorites.filter(fav => fav._id !== id));
-      console.log("Item removed from favorites:", data);
+      await onRemoveFavorite(id); // Call the removeFavorite function passed from the parent
     } catch (error) {
       console.error("Error removing item from favorites:", error);
     }
   };
 
-  const toggleFavorites = () => setShowFavorites(!showFavorites);
+
+
+  // Compare Items db to Favorites db
+  const compare = () => {
+    const comparisonArray = allItems.map((item) =>
+      favorites.some((fav) => fav.item === item.item)
+    );
+    setComparison(comparisonArray);
+  };
+
+  // Run the comparison every time favorites or allItems change
+  useEffect(() => {
+    compare();
+  }, [favorites, allItems]);
 
   return (
     <>
@@ -56,20 +45,20 @@ const Favorites = () => {
         <Modal.Header closeButton>
           <Modal.Title>Favorites</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="favoriteBody">
           {favorites.length > 0 ? (
             <ul>
               {favorites.map((item) => (
                 <li key={item._id}>
                   {item.item}
-                  <FaPlus
+                  <button className="favoriteBtn">Add to List<FaPlus
                     style={{ color: "green", cursor: "pointer" }}
-                    onClick={() => console.log('Adding')}
-                  />
-                  <FaTimes
+                    onClick={() => onAddItem(item)} // Use the addFavorite function
+                  /></button>
+                  <button className="favoriteBtn">Remove from Favorites<FaTimes
                     style={{ color: "red", cursor: "pointer" }}
                     onClick={() => removeFavorite(item._id)}
-                  />
+                  /></button>
                 </li>
               ))}
             </ul>

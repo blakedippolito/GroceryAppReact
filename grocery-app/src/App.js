@@ -4,49 +4,77 @@ import Header from "./components/Header";
 import Table from "./components/Table";
 import AddItem from "./components/AddItem";
 import Favorites from "./components/Favorites";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import helpers from "./utils/helpers";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   const [items, setItems] = useState([]);
-  const [itemsLeft, setItemsLeft] = useState(0);
+  const [favorites, setFavorites] = useState([]);
   const [showAddItem, setShowAddItem] = useState(false);
 
+  // Fetching items and favorites when the app loads
   useEffect(() => {
     const fetchItems = async () => {
-      try {
-        const response = await fetch('http://localhost:6969/api/list/');
-        const data = await response.json();
-        setItems(data.items);
-        setItemsLeft(data.left);
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
+      const data = await helpers.fetchItems();
+      setItems(data.items);
+    };
+
+    const fetchFavorites = async () => {
+      const data = await helpers.fetchFavorites();
+      setFavorites(data.favorites);
     };
 
     fetchItems();
+    fetchFavorites();
   }, []);
 
+
+  
   const addItem = async (item) => {
-    setItems([...items, item]);
+    const data = await helpers.addItem(item);
+    setItems([...items, data]);
   };
 
   const deleteItem = async (id) => {
-    setItems(items.filter(item => item._id !== id));
-    try {
-      const response = await fetch("http://localhost:6969/api/list/deleteItem", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ itemID: id }),
-      });
-
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error deleting item:", error);
-    }
+    setItems(items.filter((item) => item._id !== id));
+    await helpers.deleteItem(id);
   };
+
+
+  // Function to remove a favorite
+  const removeFavorite = async (id) => {
+    setFavorites(favorites.filter((fav) => fav._id !== id));
+    await helpers.removeFavorite(id);
+  };
+
+  // Function to add a favorite
+  const addFavorite = async (item) => {
+    const addedFavorite = await helpers.addFavorite(item);
+    setFavorites([...favorites, addedFavorite]);
+  };
+  const toggleComplete = async (id) => {
+    const item = items.find(item => item._id === id);
+    if (!item) return;
+  
+    const updatedItem = item.completed
+      ? await helpers.markIncomplete(id)
+      : await helpers.markComplete(id);
+  
+    // Update the items list in state
+    setItems(prevItems =>
+      prevItems.map(i => (i._id === id ? { ...i, completed: !i.completed } : i))
+    );
+  };
+  // Function to update the item in the state (called when marking complete/incomplete)
+  const updateItem = (updatedItem) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item._id === updatedItem._id ? updatedItem : item
+      )
+    );
+  };
+  
+  const itemsLeft = items.filter(item => !item.completed).length;
 
   return (
     <div className="App">
@@ -56,8 +84,22 @@ function App() {
         showAdd={showAddItem}
       />
       {showAddItem && <AddItem onAdd={addItem} />}
-      <Table items={items} onDelete={deleteItem} />
-      <Favorites />
+      <h3>Items Left: {items.filter(item=>!item.completed).length}</h3>
+      <Table
+        items={items}
+        favorites={favorites}
+        onDelete={deleteItem}
+        onAddFavorite={addFavorite}
+        onRemoveFavorite={removeFavorite}
+        onUpdateItem={toggleComplete}
+      />
+      <Favorites
+        allItems={items}
+        favorites={favorites}
+        onRemoveFavorite={removeFavorite}
+        onAddFavorite={addFavorite}
+        onAddItem={addItem}
+      />
     </div>
   );
 }

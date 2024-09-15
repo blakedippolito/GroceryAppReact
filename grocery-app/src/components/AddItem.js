@@ -3,7 +3,8 @@ import { useState } from "react";
 const AddItem = ({ onAdd }) => {
   const [item, setItem] = useState("");
   const [amount, setAmount] = useState("");
-  const saved = false;
+  const [saved, setSaved] = useState(false)
+  const [completed, setCompleted] = useState(false)
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -12,35 +13,15 @@ const AddItem = ({ onAdd }) => {
       return;
     }
 
-    // Create new item object with backend-compatible property names
-    const newItem = { item: item, amount: amount, saved };
 
-    try {
       // Add item to the UI, but map the backend names to UI names here
-      onAdd({ item: item, amount, saved });
-
-      // Send the item to the server
-      const response = await fetch("http://localhost:6969/api/list/addItem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add item");
-      }
-
-      const data = await response.json();
-      console.log("Item added to server:", data);
-    } catch (error) {
-      console.error("Error adding item:", error);
-    }
+    onAdd({ item, amount, saved, completed });
 
     // Clear input fields
     setItem("");
     setAmount("");
+    setSaved(false)
+    setCompleted(false)
   };
 
   return (

@@ -9,10 +9,13 @@ const ItemSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    saved: {
+        type: Boolean,
+        required: false
+    },
     completed: {
         type: Boolean,
         required: true
-
     }
 })
 
