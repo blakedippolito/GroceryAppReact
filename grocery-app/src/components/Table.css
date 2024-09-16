@@ -1,22 +1,22 @@
 table {
-    margin: 20px auto; /* Center the table horizontally */
-    border-collapse: collapse; /* Remove space between table borders */
-  }
-  
-  table th, table td {
-    border: 1px solid black; /* Add borders to the table */
-    padding: 8px; /* Add some padding to the cells */
-  }
-  
-  table tr:nth-child(even) {
-    background-color: lightgray; /* Gray background for even rows */
-  }
+  margin: 50px auto; /* Center the table horizontally */
+  border-collapse: collapse; /* Remove space between table borders */
+}
+
+table th, table td {
+  border: 1px solid black; /* Add borders to the table */
+  padding: 8px; /* Add some padding to the cells */
+}
+
+table tr:nth-child(even) {
+  background-color: lightgray; /* Gray background for even rows */
+}
 
 
-  tr img {
-    height: 20px;
-  }
+tr img {
+  height: 20px;
+}
 
-  td {
-    user-select: none;
-  }
+td {
+  user-select: none;
+}

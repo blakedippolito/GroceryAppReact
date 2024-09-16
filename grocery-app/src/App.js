@@ -28,18 +28,17 @@ function App() {
     fetchFavorites();
   }, []);
 
-
-  
+  //Add Item
   const addItem = async (item) => {
     const data = await helpers.addItem(item);
     setItems([...items, data]);
   };
 
+  //Delete Item
   const deleteItem = async (id) => {
     setItems(items.filter((item) => item._id !== id));
     await helpers.deleteItem(id);
   };
-
 
   // Function to remove a favorite
   const removeFavorite = async (id) => {
@@ -52,29 +51,24 @@ function App() {
     const addedFavorite = await helpers.addFavorite(item);
     setFavorites([...favorites, addedFavorite]);
   };
+
+  //Function to toggle item.complete
   const toggleComplete = async (id) => {
-    const item = items.find(item => item._id === id);
+    const item = items.find((item) => item._id === id);
     if (!item) return;
-  
+
     const updatedItem = item.completed
       ? await helpers.markIncomplete(id)
       : await helpers.markComplete(id);
-  
+
     // Update the items list in state
-    setItems(prevItems =>
-      prevItems.map(i => (i._id === id ? { ...i, completed: !i.completed } : i))
-    );
-  };
-  // Function to update the item in the state (called when marking complete/incomplete)
-  const updateItem = (updatedItem) => {
     setItems((prevItems) =>
-      prevItems.map((item) =>
-        item._id === updatedItem._id ? updatedItem : item
+      prevItems.map((i) =>
+        i._id === id ? { ...i, completed: !i.completed } : i
       )
     );
   };
-  
-  const itemsLeft = items.filter(item => !item.completed).length;
+  // Function to update the item in the state (called when marking complete/incomplete)
 
   return (
     <div className="App">
@@ -82,9 +76,21 @@ function App() {
         title={"Grocery App"}
         onAdd={() => setShowAddItem(!showAddItem)}
         showAdd={showAddItem}
+        onAddItem={addItem}
       />
-      {showAddItem && <AddItem onAdd={addItem} />}
-      <h3>Items Left: {items.filter(item=>!item.completed).length}</h3>
+      <div className="main">
+        {showAddItem && (
+          <AddItem
+            onAdd={addItem}
+            
+          />
+        )}
+
+        <h3 className="itemLeft">
+          <span>Items Left: </span>{" "}
+          {items.filter((item) => !item.completed).length}
+        </h3>
+      </div>
       <Table
         items={items}
         favorites={favorites}

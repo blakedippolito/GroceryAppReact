@@ -63,8 +63,9 @@ const Item = ({
       key={item._id}
       onDoubleClick={handleDoubleClick}
       style={{ backgroundColor: isCompleted ? "#FFCCCB" : "white" }}
+      className="text-center"
     >
-      <td>
+      <td className="w-[20px] text-center">
         {isFavorited ? (
           <FaHeart
             style={{ color: "green", cursor: "pointer" }}
@@ -77,11 +78,11 @@ const Item = ({
           />
         )}
       </td>
-      <td>
-        {item.item} {icon && <img src={icon} alt="icon" />}
+      <td className="w-[150px]">
+        {item.item} {icon && <img src={icon} alt="icon" className="inline-block" />}
       </td>
-      <td>{item.amount}</td>
-      <td>
+      <td className="w-[50px]">{item.amount}</td>
+      <td className="w-[10px]">
         <FaTimes
           style={{ color: "red", cursor: "pointer" }}
           onClick={() => onDelete(item._id)}
@@ -89,6 +90,7 @@ const Item = ({
       </td>
     </tr>
   );
+  
 };
 
 export default Item;

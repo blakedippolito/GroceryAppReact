@@ -145,7 +145,7 @@ const markIncomplete = async (id) => {
   }
 };
 
-export default {
+const helperFunctions = {
   fetchItems,
   addItem,
   deleteItem,
@@ -154,4 +154,5 @@ export default {
   removeFavorite,
   markComplete,
   markIncomplete
-};
+}
+export default helperFunctions;

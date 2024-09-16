@@ -4,7 +4,13 @@ import Button from "react-bootstrap/Button";
 import { FaTimes, FaPlus } from "react-icons/fa";
 import "./Favorites.css";
 
-const Favorites = ({ allItems, favorites, onRemoveFavorite, onAddFavorite, onAddItem }) => {
+const Favorites = ({
+  allItems,
+  favorites,
+  onRemoveFavorite,
+  onAddFavorite,
+  onAddItem,
+}) => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [comparison, setComparison] = useState([]);
 
@@ -19,8 +25,6 @@ const Favorites = ({ allItems, favorites, onRemoveFavorite, onAddFavorite, onAdd
       console.error("Error removing item from favorites:", error);
     }
   };
-
-
 
   // Compare Items db to Favorites db
   const compare = () => {
@@ -45,27 +49,53 @@ const Favorites = ({ allItems, favorites, onRemoveFavorite, onAddFavorite, onAdd
         <Modal.Header closeButton>
           <Modal.Title>Favorites</Modal.Title>
         </Modal.Header>
+
         <Modal.Body className="favoriteBody">
           {favorites.length > 0 ? (
-            <ul>
-              {favorites.map((item) => (
-                <li key={item._id}>
-                  {item.item}
-                  <button className="favoriteBtn">Add to List<FaPlus
-                    style={{ color: "green", cursor: "pointer" }}
-                    onClick={() => onAddItem(item)} // Use the addFavorite function
-                  /></button>
-                  <button className="favoriteBtn">Remove from Favorites<FaTimes
-                    style={{ color: "red", cursor: "pointer" }}
-                    onClick={() => removeFavorite(item._id)}
-                  /></button>
-                </li>
-              ))}
-            </ul>
+            <table className="min-w-full text-left">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">Item</th>
+                  <th className="px-4 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {favorites.map((item) => (
+                  <tr key={item._id}>
+                    <td className="px-4 py-2">{item.item}</td>
+                    <td className="px-4 py-2">
+                      <button className="favoriteBtn px-2 py-1 mr-2 bg-green-500 text-white rounded">
+                        Add to List
+                        <FaPlus
+                          style={{
+                            color: "white",
+                            cursor: "pointer",
+                            marginLeft: "5px",
+                          }}
+                          onClick={() => onAddItem(item)}
+                        />
+                      </button>
+                      <button className="favoriteBtn px-2 py-1 bg-red-500 text-white rounded">
+                        Remove from Favorites
+                        <FaTimes
+                          style={{
+                            color: "white",
+                            cursor: "pointer",
+                            marginLeft: "5px",
+                          }}
+                          onClick={() => removeFavorite(item._id)}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p>No favorites saved.</p>
           )}
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={toggleFavorites}>
             Close
